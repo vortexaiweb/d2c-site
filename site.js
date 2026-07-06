@@ -20,12 +20,16 @@
 
     let counterEl = document.getElementById('counter');
     if (counterEl) {
-        let count = 487 + Math.floor(Math.random() * 10);
-        function updateCounter() {
-            count += Math.floor(Math.random() * 2) + 1;
-            counterEl.textContent = count;
+        async function fetchCounter() {
+            try {
+                const r = await fetch('/api/counter');
+                const d = await r.json();
+                counterEl.textContent = d.count;
+            } catch {
+                counterEl.textContent = '--';
+            }
         }
-        updateCounter();
-        setInterval(updateCounter, 2000 + Math.random() * 3000);
+        fetchCounter();
+        setInterval(fetchCounter, 30000);
     }
 })();
