@@ -66,6 +66,22 @@
             text-decoration: underline;
         }
 
+        .top {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            letter-spacing: 2px;
+            z-index: 2;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 1);
+        }
+
+        .top .countdown {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
         .faith {
             position: fixed;
             bottom: 20px;
@@ -78,11 +94,21 @@
             z-index: 2;
             text-shadow: 0 0 10px rgba(0, 0, 0, 1);
         }
+
+        .faith .counter {
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
     </style>
 </head>
 <body>
 
     <div id="bg-container"></div>
+
+    <div class="top">
+        <div class="countdown" id="countdown">--</div>
+    </div>
 
     <div id="content">
         <a href="/me">me</a>
@@ -90,8 +116,12 @@
         <a href="/music">music</a>
     </div>
 
-    <div class="faith">faith &mdash; hope &mdash; death</div>
+    <div class="faith">
+        <div class="counter">visitors: <span id="counter">--</span></div>
+        faith &mdash; hope &mdash; death
+    </div>
 
+    <script src="/site.js"></script>
     <script>
         const gifs = [
             "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ2E0Y3U4OTg5eWFtZTVmcHhyZm5zbDhmYm5odzl5dm04aWh1amQ1ZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3o6ZsS9CYscAuuw7Is/giphy.gif",
