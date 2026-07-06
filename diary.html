@@ -291,8 +291,6 @@
 
         let token = localStorage.getItem('diary_token');
 
-        const loginPrompt = document.getElementById('login-prompt');
-        const loginLink = document.getElementById('login-link');
         const logoutBtn = document.getElementById('logout-btn');
         const newPostForm = document.getElementById('new-post-form');
         const postText = document.getElementById('post-text');
@@ -354,14 +352,14 @@
         }
 
         function showLoggedIn() {
-            loginPrompt.style.display = 'none';
+            hintEl.style.display = 'none';
             logoutBtn.style.display = 'block';
             newPostForm.style.display = 'block';
             loadPosts();
         }
 
         function showLoggedOut() {
-            loginPrompt.style.display = 'block';
+            hintEl.style.display = 'block';
             logoutBtn.style.display = 'none';
             newPostForm.style.display = 'none';
             token = null;
