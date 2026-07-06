@@ -187,21 +187,17 @@
             letter-spacing: 1px;
         }
 
-        #login-prompt {
+        .faith {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .click-hint {
             text-align: center;
-            margin-bottom: 30px;
-        }
-
-        #login-prompt a {
-            color: rgba(255, 255, 255, 0.5);
-            text-decoration: none;
-            font-size: 13px;
+            color: rgba(255, 255, 255, 0.1);
+            font-size: 11px;
             letter-spacing: 1px;
-        }
-
-        #login-prompt a:hover {
-            color: #fff;
-            text-decoration: underline;
+            margin-bottom: 10px;
         }
 
         .faith {
@@ -222,11 +218,9 @@
         <a class="back" href="/">&larr; back</a>
         <h1>diary</h1>
 
-        <div id="login-prompt">
-            <a href="/diary/log" id="login-link">[ войти чтобы написать ]</a>
-        </div>
-
         <button id="logout-btn">logout</button>
+
+        <div class="click-hint" id="click-hint"></div>
 
         <div id="new-post-form">
             <textarea id="post-text" placeholder="что у тебя нового?..."></textarea>
@@ -237,10 +231,26 @@
             <div id="posts-list"></div>
         </div>
 
-        <div class="faith">faith &mdash; hope &mdash; death</div>
+        <div class="faith" id="faith-click">faith &mdash; hope &mdash; death</div>
     </div>
 
     <script>
+        let faithClicks = 0;
+        const faithEl = document.getElementById('faith-click');
+        const hintEl = document.getElementById('click-hint');
+        if (faithEl) {
+            faithEl.addEventListener('click', () => {
+                faithClicks++;
+                const remaining = 5 - faithClicks;
+                if (remaining > 0 && remaining <= 3) {
+                    hintEl.textContent = '·'.repeat(remaining);
+                }
+                if (faithClicks >= 5) {
+                    window.location.href = '/diary/log';
+                }
+            });
+        }
+
         const gifs = [
             "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ2E0Y3U4OTg5eWFtZTVmcHhyZm5zbDhmYm5odzl5dm04aWh1amQ1ZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3o6ZsS9CYscAuuw7Is/giphy.gif",
             "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MTA0dXRsdm1naW56aHcwYjh3bGhlbGxpcHhyZTl2bXkxeWllenJwdSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/2vs8rSilWauHJUqM5l/giphy.gif",
