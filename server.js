@@ -6,11 +6,16 @@ const bcrypt = require('bcryptjs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'd2c-diary-secret-change-me';
+const JWT_SECRET = process.env.JWT_SECRET;
 const DATA_FILE = path.join(__dirname, 'posts.json');
 
 const USERNAME = process.env.DIARY_USERNAME || 'd2c';
-const PASSWORD_HASH = process.env.DIARY_PASSWORD_HASH || bcrypt.hashSync('d2c123', 10);
+const DIARY_PASSWORD = process.env.DIARY_PASSWORD;
+if (!DIARY_PASSWORD) {
+    console.error('DIARY_PASSWORD environment variable is not set!');
+    process.exit(1);
+}
+const PASSWORD_HASH = bcrypt.hashSync(DIARY_PASSWORD, 10);
 
 app.use(express.json());
 
