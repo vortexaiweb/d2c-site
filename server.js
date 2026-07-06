@@ -81,7 +81,7 @@ app.get('/api/me', authMiddleware, (req, res) => {
 
 app.get('/api/counter', (req, res) => {
     const now = new Date();
-    const msk = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
+    const msk = new Date(now.getTime() + (now.getTimezoneOffset() + 180) * 60000);
     const start = new Date(msk);
     start.setHours(0, 0, 0, 0);
     const end = new Date(start);
