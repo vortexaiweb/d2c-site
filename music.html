@@ -158,15 +158,14 @@
         <div id="now-playing">
             <div class="np-none">загрузка...</div>
         </div>
-    </div>
 
-    <div class="faith">
-        <div class="counter">visited today: <span id="counter">--</span></div>
-        faith &mdash; hope &mdash; death
-    </div>
+        <div class="faith">
+            <div class="counter">visited today: <span id="counter">--</span></div>
+            faith &mdash; hope &mdash; death
+        </div>
 
-    <script src="/site.js"></script>
-    <script id="page-script">
+        <script src="/site.js"></script>
+        <script id="page-script">
         const LASTFM_USER = 'd2cfellinluv';
         const LASTFM_API_KEY = 'ee56b7cd5dfe69f5fde6241f74e08824';
 
@@ -205,5 +204,6 @@
         fetchNowPlaying();
         setInterval(fetchNowPlaying, 15000);
     </script>
+</div>
 </body>
 </html>
