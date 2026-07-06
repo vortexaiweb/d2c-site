@@ -81,11 +81,12 @@ app.get('/api/me', authMiddleware, (req, res) => {
 
 app.get('/api/counter', (req, res) => {
     const now = new Date();
-    const start = new Date(now);
+    const msk = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Moscow' }));
+    const start = new Date(msk);
     start.setHours(0, 0, 0, 0);
     const end = new Date(start);
     end.setDate(end.getDate() + 1);
-    const progress = (now - start) / (end - start);
+    const progress = (msk - start) / (end - start);
     const count = Math.floor(3 + progress * 997);
     res.json({ count });
 });
