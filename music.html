@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>d2c / music</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #bg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .bg-gif {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .bg-gif.active {
+            opacity: 1;
+        }
+
+        #content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 24px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 1);
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        a.back {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        a.back:hover {
+            color: #fff;
+        }
+
+        #now-playing {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 1px;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 1);
+        }
+
+        #now-playing .np-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
+        }
+
+        #now-playing .np-track {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        #now-playing .np-artist {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        #now-playing .np-error {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        #now-playing .np-none {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bg-container"></div>
+
+    <div id="content">
+        <a class="back" href="/">&larr; back</a>
+        <a href="https://soundcloud.com/fuckd2c" target="_blank">soundcloud</a>
+        <div id="now-playing">
+            <div class="np-label">[ сейчас играет ]</div>
+            <div class="np-none">загрузка...</div>
+        </div>
+    </div>
+
+    <script>
+        const gifs = [
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ2E0Y3U4OTg5eWFtZTVmcHhyZm5zbDhmYm5odzl5dm04aWh1amQ1ZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3o6ZsS9CYscAuuw7Is/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MTA0dXRsdm1naW56aHcwYjh3bGhlbGxpcHhyZTl2bXkxeWllenJwdSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/2vs8rSilWauHJUqM5l/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3cW8wdXB4NDZzNzExaXlwd25yaTBjZnZ2djU4eDBzenZtcDh4YWtqeCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/LWH5axJkuS0ZdO0Upl/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3NzY3Y2drYWd5Y3EzMGxrYXY1eWVwazR3am02Y3Jjejc1eTQyMWFjaCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3og0Iw1jlHwfl9Q5MY/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3eGNyN2s1YWJrOGNob213bnloc25oNHA2a25pbmw3M29wMmc2cnFleSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/adJkQdRCsyAVdGQdF6/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3cW8wdXB4NDZzNzExaXlwd25yaTBjZnZ2djU4eDBzenZtcDh4YWtqeCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/LWH5axJkuS0ZdO0Upl/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3cjRkdWh1bXViOGZ6cXU3djA5Zm8wdmNxYWl0YjU1bXlqcXpud2l6MCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/du2blShdOu5pe/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3andvanVmZm9ldXZlOHVvamd6MXcyZWdvaHNmNHl6cWx6bzdrNzQwaCZlcD12MV9naWZzX3JlbGF0ZWQmY3Q9Zw/l46Cvwo9PphGJjico/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTFvbmw3dHUxZnQweW91c2d1Z3EyZDVhM2xpM285MmN0ZzIzYm9hYiZlcD12MV9naWZzX3JlbGF0ZWQmY3Q9Zw/smPCYHPfEfRfy/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3M3BlZ2tuYXQ1N3Nsa2hmczd0cDdvOTg5aHZ1ejg1Mm93bWMwM2RsZyZlcD12MV9naWZzX3JlbGF0ZWQmY3Q9Zw/26n6OuU2HDUNQzFV6/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcG14M3gxbTViZmoxMDhnanJxYzJtcHRibGxlbHk0dGJiaTFlZnlpNCZlcD12MV9naWZzX3RyZW5kaW5nJmN0PWc/l2JIhq7AR3J7Qq9Hy/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaGJzMjlvM3NmNDN6NXNhdTB1aG9heWZ0MGpwMXo0ZXIzOGR0ZTJmMCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VXluml3lugeIw/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWxoeHl2b3dyY3E5cm9sdjJ3b2xlczNtcXV3Mnp0NG5uYXVoemo3ayZlcD12MV9naWZzX3JlbGF0ZWQmY3Q9Zw/M69bHillPDcpG/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWxoeHl2b3dyY3E5cm9sdjJ3b2xlczNtcXV3Mnp0NG5uYXVoemo3ayZlcD12MV9naWZzX3JlbGF0ZWQmY3Q9Zw/3o7bucSgnyC9KUJbOw/giphy.gif",
+            "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3cHl1aWt1M2N0NjZqYzBid25kM3pscHJibmhjaWtseDF2dDl4Njd2cyZlcD12MV9naWZzX3JlbGF0ZWQmY3Q9Zw/jBy5Rdrw0nmFO/giphy.gif"
+        ];
+
+        (function() {
+            const container = document.getElementById('bg-container');
+            let currentIndex = 0;
+
+            gifs.forEach((src, index) => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = 'bg-gif';
+                if (index === 0) img.classList.add('active');
+                container.appendChild(img);
+            });
+
+            const images = document.querySelectorAll('.bg-gif');
+            setInterval(() => {
+                images[currentIndex].classList.remove('active');
+                currentIndex = (currentIndex + 1) % images.length;
+                images[currentIndex].classList.add('active');
+            }, 4000);
+        })();
+
+        const LASTFM_USER = 'fuckd2c';
+        const LASTFM_API_KEY = '5b05c7e3193b7e574482387c1f4e5093';
+
+        const npDiv = document.getElementById('now-playing');
+
+        async function fetchNowPlaying() {
+            try {
+                const url = `https://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user=${LASTFM_USER}&api_key=${LASTFM_API_KEY}&format=json&limit=1`;
+                const res = await fetch(url);
+                const data = await res.json();
+                const track = data?.recenttracks?.track?.[0];
+                if (!track) {
+                    npDiv.innerHTML = `
+                        <div class="np-label">[ сейчас играет ]</div>
+                        <div class="np-none">ничего не играет</div>`;
+                    return;
+                }
+                const nowPlaying = track['@attr']?.nowplaying === 'true';
+                if (nowPlaying) {
+                    npDiv.innerHTML = `
+                        <div class="np-label">[ сейчас играет ]</div>
+                        <div class="np-track">${escapeHtml(track.name)}</div>
+                        <div class="np-artist">${escapeHtml(track.artist['#text'])}</div>`;
+                } else {
+                    npDiv.innerHTML = `
+                        <div class="np-label">[ последнее ]</div>
+                        <div class="np-track">${escapeHtml(track.name)}</div>
+                        <div class="np-artist">${escapeHtml(track.artist['#text'])}</div>`;
+                }
+            } catch {
+                npDiv.innerHTML = `
+                    <div class="np-label">[ сейчас играет ]</div>
+                    <div class="np-error">не удалось загрузить</div>`;
+            }
+        }
+
+        function escapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        fetchNowPlaying();
+        setInterval(fetchNowPlaying, 15000);
+    </script>
+</body>
+</html>
