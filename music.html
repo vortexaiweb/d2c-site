@@ -50,8 +50,6 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-            width: 80%;
-            max-width: 500px;
         }
 
         a {
@@ -77,41 +75,43 @@
             color: #fff;
         }
 
-        #now-playing {
-            font-size: 16px;
-            color: rgba(255, 255, 255, 0.6);
-            letter-spacing: 1px;
-            min-height: 60px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+        .np-label {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            letter-spacing: 2px;
             text-shadow: 0 0 10px rgba(0, 0, 0, 1);
         }
 
-        #now-playing .np-label {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.3);
+        .np-track {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 24px;
             letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 1);
         }
 
-        #now-playing .np-track {
-            font-size: 18px;
-            color: rgba(255, 255, 255, 0.9);
+        .np-track:hover {
+            color: #fff;
         }
 
-        #now-playing .np-artist {
-            font-size: 14px;
+        .np-artist {
             color: rgba(255, 255, 255, 0.5);
+            font-size: 18px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 1);
         }
 
-        #now-playing .np-error {
-            font-size: 12px;
+        .np-none, .np-error {
             color: rgba(255, 255, 255, 0.2);
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 1);
         }
 
-        #now-playing .np-none {
-            font-size: 12px;
+        .faith {
             color: rgba(255, 255, 255, 0.2);
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 1);
         }
     </style>
 </head>
@@ -122,10 +122,11 @@
     <div id="content">
         <a class="back" href="/">&larr; back</a>
         <a href="https://soundcloud.com/fuckd2c" target="_blank">soundcloud</a>
+        <div class="np-label">[ now playing ]</div>
         <div id="now-playing">
-            <div class="np-label">[ сейчас играет ]</div>
             <div class="np-none">загрузка...</div>
         </div>
+        <div class="faith">faith - hope - death</div>
     </div>
 
     <script>
@@ -179,27 +180,21 @@
                 const data = await res.json();
                 const track = data?.recenttracks?.track?.[0];
                 if (!track) {
-                    npDiv.innerHTML = `
-                        <div class="np-label">[ сейчас играет ]</div>
-                        <div class="np-none">ничего не играет</div>`;
+                    npDiv.innerHTML = `<div class="np-none">ничего не играет</div>`;
                     return;
                 }
                 const nowPlaying = track['@attr']?.nowplaying === 'true';
                 if (nowPlaying) {
                     npDiv.innerHTML = `
-                        <div class="np-label">[ сейчас играет ]</div>
                         <div class="np-track">${escapeHtml(track.name)}</div>
                         <div class="np-artist">${escapeHtml(track.artist['#text'])}</div>`;
                 } else {
                     npDiv.innerHTML = `
-                        <div class="np-label">[ последнее ]</div>
                         <div class="np-track">${escapeHtml(track.name)}</div>
                         <div class="np-artist">${escapeHtml(track.artist['#text'])}</div>`;
                 }
             } catch {
-                npDiv.innerHTML = `
-                    <div class="np-label">[ сейчас играет ]</div>
-                    <div class="np-error">не удалось загрузить</div>`;
+                npDiv.innerHTML = `<div class="np-error">не удалось загрузить</div>`;
             }
         }
 
