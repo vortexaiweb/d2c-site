@@ -79,6 +79,17 @@ app.get('/api/me', authMiddleware, (req, res) => {
     res.json({ username: req.user.username });
 });
 
+app.get('/api/counter', (req, res) => {
+    const now = new Date();
+    const start = new Date(now);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+    const progress = (now - start) / (end - start);
+    const count = Math.floor(3 + progress * 997);
+    res.json({ count });
+});
+
 app.get('/api/posts', (req, res) => {
     const posts = loadPosts();
     res.json({ posts });
