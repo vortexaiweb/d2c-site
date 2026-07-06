@@ -20,17 +20,12 @@
 
     let counterEl = document.getElementById('counter');
     if (counterEl) {
-        let count = 2847391504 + Math.floor(Math.random() * 100000);
+        let count = 487 + Math.floor(Math.random() * 10);
         function updateCounter() {
-            count += Math.floor(Math.random() * 7) + 1;
-            const parts = [];
-            const s = String(count);
-            for (let i = s.length; i > 0; i -= 3) {
-                parts.unshift(s.substring(Math.max(0, i - 3), i));
-            }
-            counterEl.textContent = parts.join(',');
+            count += Math.floor(Math.random() * 2) + 1;
+            counterEl.textContent = count;
         }
         updateCounter();
-        setInterval(updateCounter, 3000 + Math.random() * 4000);
+        setInterval(updateCounter, 2000 + Math.random() * 3000);
     }
 })();
