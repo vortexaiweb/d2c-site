@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>d2c / music</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            overflow: hidden;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #bg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .bg-gif {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .bg-gif.active {
+            opacity: 1;
+        }
+
+        #content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 24px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 1);
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        a.back {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        a.back:hover {
+            color: #fff;
+        }
+
+        .np-label {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 1);
+        }
+
+        .np-track {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 24px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 1);
+        }
+
+        .np-track:hover {
+            color: #fff;
+        }
+
+        .np-artist {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 18px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 1);
+        }
+
+        .np-none, .np-error {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 1);
+        }
+
+        .top {
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
+            letter-spacing: 2px;
+            z-index: 2;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 1);
+        }
+
+        .top .countdown {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .faith {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 12px;
+            letter-spacing: 2px;
+            z-index: 2;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 1);
+        }
+
+        .faith .counter {
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="bg-container"></div>
+
+    <div class="top">
+        <div class="countdown" id="countdown">--</div>
+    </div>
+
+    <div id="content">
+        <a class="back" href="/">&larr; back</a>
+        <a href="https://soundcloud.com/fuckd2c" target="_blank">soundcloud</a>
+        <div class="np-label">[ now playing ]</div>
+        <div id="now-playing">
+            <div class="np-none">загрузка...</div>
+        </div>
+    </div>
+
+    <div class="faith">
+        <div class="counter">visited today: <span id="counter">--</span></div>
+        faith &mdash; hope &mdash; death
+    </div>
+
+    <script src="/site.js"></script>
+    <script id="page-script">
+        const LASTFM_USER = 'd2cfellinluv';
+        const LASTFM_API_KEY = 'ee56b7cd5dfe69f5fde6241f74e08824';
+
+        const npDiv = document.getElementById('now-playing');
+
+        async function fetchNowPlaying() {
+            try {
+                const url = `https://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user=${LASTFM_USER}&api_key=${LASTFM_API_KEY}&format=json&limit=1`;
+                const res = await fetch(url);
+                const data = await res.json();
+                const track = data?.recenttracks?.track?.[0];
+                if (!track) {
+                    npDiv.innerHTML = `<div class="np-none">ничего не играет</div>`;
+                    return;
+                }
+                if (track['@attr']?.nowplaying === 'true') {
+                    npDiv.innerHTML = `
+                        <div class="np-track">${escapeHtml(track.name)}</div>
+                        <div class="np-artist">${escapeHtml(track.artist['#text'])}</div>`;
+                } else {
+                    npDiv.innerHTML = `
+                        <div class="np-track">${escapeHtml(track.name)}</div>
+                        <div class="np-artist">${escapeHtml(track.artist['#text'])}</div>`;
+                }
+            } catch {
+                npDiv.innerHTML = `<div class="np-error">не удалось загрузить</div>`;
+            }
+        }
+
+        function escapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+
+        fetchNowPlaying();
+        setInterval(fetchNowPlaying, 15000);
+    </script>
+</body>
+</html>
