@@ -100,6 +100,14 @@
             if (newContent && oldContent) {
                 oldContent.innerHTML = newContent.innerHTML;
             }
+            const oldStyles = document.querySelectorAll('head style');
+            const newStyles = doc.querySelectorAll('head style');
+            oldStyles.forEach(s => s.remove());
+            newStyles.forEach(s => {
+                const el = document.createElement('style');
+                el.textContent = s.textContent;
+                document.head.appendChild(el);
+            });
             document.title = doc.title;
             initPageScripts();
         } catch {}
